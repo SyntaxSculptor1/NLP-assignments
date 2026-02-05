@@ -10,18 +10,18 @@ This is going to be a repo where we do our NLP assignments
 
 # Our homework assignments must contain:
 Appendix — Reproducibility checklist + report template
-A) Reproducibility checklist (recommended for all reports)
-  Exact dataset version/source stated
-  Train/dev/test sizes reported + seed reported
-  All hyperparameters listed
-  One command to reproduce main results
+- A) Reproducibility checklist (recommended for all reports)
+    Exact dataset version/source stated
+    Train/dev/test sizes reported + seed reported
+    All hyperparameters listed
+    One command to reproduce main results
   Runtime notes (approximate) included
-B) Minimal report structure (recommended headings)
-  1. Dataset & Setup (splits, preprocessing)
-  2. Models (baselines and/or neural/Transformer)
-  3. Experimental Protocol (tuning, early stopping, selection)
-  4. Results (tables, confusion matrix)
-  5. Error Analysis (categories + examples)
-  6. Discussion (what worked, what didn’t, why)
-  7. Limitations (required in Assignment 3)
+- B) Minimal report structure (recommended headings)
+    1. Dataset & Setup (splits, preprocessing)
+    2. Models (baselines and/or neural/Transformer)
+    3. Experimental Protocol (tuning, early stopping, selection)
+    4. Results (tables, confusion matrix)
+    5. Error Analysis (categories + examples)
+    6. Discussion (what worked, what didn’t, why)
+    7. Limitations (required in Assignment 3)
 Appendix (AI-use statement, extra plots)
