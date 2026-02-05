@@ -1,14 +1,14 @@
 # NLP-assignments
 This is going to be a repo where we do our NLP assignments
 
-#Overleaf assignments:
+# Overleaf assignments:
 - Assignment_1: https://www.overleaf.com/6472831386rtpzpxrsfjqb#522a11
 - Assignment_2: https://www.overleaf.com/9897179972mbrxkfxsnnvf#d130d5
 - Assignment_3: https://www.overleaf.com/3311396478zdqqgfrksmvf#809416
 - Assignment_4: https://www.overleaf.com/9713737641ndhbsxgthhbx#9750d7
 
 
-#Our homework assignments must contain:
+# Our homework assignments must contain:
 Appendix — Reproducibility checklist + report template
 A) Reproducibility checklist (recommended for all reports)
   Exact dataset version/source stated
