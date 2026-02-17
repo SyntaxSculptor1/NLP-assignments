@@ -1,0 +1,4 @@
+&lt;A HREF=""http://www.investor.reuters.com/FullQuote.aspx?ticker=AAPL.O target=/stocks/quickinfo/fullquote""&gt;AAPL.O&lt;/A&gt;
+&lt;A HREF=""http://www.investor.reuters.com/FullQuote.aspx?ticker=BCE.TO target=/stocks/quickinfo/fullquote""&gt;BCE.TO&lt;/A&gt;
+&lt;b&gt;...&lt;/b&gt;
+&lt;A HREF=""http://www.investor.reuters.com/FullQuote.aspx?ticker=MOT.N target=/stocks/quickinfo/fullquote""&gt;MOT.N&lt;/A&gt;
