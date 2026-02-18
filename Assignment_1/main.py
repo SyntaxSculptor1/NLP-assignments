@@ -4,12 +4,12 @@ import argparse
 
 from load_data import load_nltk_models, load_data
 from preprocess_data import merge_title_description, text_cleaning, tfidf_transform
-from logistic_regression import (
-    perform_logistic_regression,
-    evaluate_logistic_regression,
-)
-from svm import perform_support_vector_machine, evaluate_support_vector_machine
+from models import scale_data_and_define_split, perform_logistic_regression, perform_support_vector_machine
+from evaluation import evaluate_model, find_misclassified
+from rich.console import Console
+from rich.panel import Panel
 
+console = Console()
 
 def argument_parsing() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -37,6 +37,11 @@ def argument_parsing() -> argparse.Namespace:
 
 
 def main() -> None:
+    program_title = Panel(
+        "[bold white] Assignment 1 - News Classification using TF-IDF features [/bold white]"
+    )
+    console.print(program_title)
+
     args = argument_parsing()
 
     DATASET = args.dataset
@@ -44,24 +49,26 @@ def main() -> None:
     SPLIT = args.split
     SEED = args.seed
 
-    load_nltk_models()
+    load_nltk_models(verbose=VERBOSE)
 
-    train_data, validation_data, test_data = load_data(
-        dataset=DATASET, split=SPLIT, seed=SEED
+    train_data, validation_data, test_data_raw = load_data(
+        dataset=DATASET, split=SPLIT, seed=SEED, verbose=VERBOSE
     )
 
-    train_data, validation_data, test_data = merge_title_description(
-        datasets=[train_data, validation_data, test_data],
+    train_data, validation_data, test_data_raw = merge_title_description(
+        datasets=[train_data, validation_data, test_data_raw],
         title_column="title",
         description_column="description",
         new_column="text",
+        verbose=VERBOSE
     )
 
     lemmatizer = WordNetLemmatizer()
     train_data, validation_data, test_data = text_cleaning(
-        datasets=[train_data, validation_data, test_data],
+        datasets=[train_data, validation_data, test_data_raw],
         column="text",
         lemmatizer=lemmatizer,
+        verbose=VERBOSE
     )
 
     vectorizer = TfidfVectorizer(lowercase=True, stop_words="english")
@@ -71,6 +78,7 @@ def main() -> None:
         validation_texts=validation_data["text"],
         test_texts=test_data["text"],
         vectorizer=vectorizer,
+        verbose=VERBOSE
     )
 
     y_train, y_val, y_test = (
@@ -79,41 +87,76 @@ def main() -> None:
         test_data["label"],
     )
 
+    x_full, y_full, predefined_split = scale_data_and_define_split(
+        x_train= x_train,
+        x_val= x_val,
+        y_train= y_train,
+        y_val= y_val,
+        verbose=VERBOSE
+    )
+
     logreg_param_grid = {"C": [0.001, 0.01, 0.1, 1, 10, 100]}
-    logreg_grid_search = perform_logistic_regression(
-        x_train=x_train,
-        x_val=x_val,
-        y_train=y_train,
-        y_val=y_val,
+    logreg_model = perform_logistic_regression(
+        x_full=x_full,
+        y_full=y_full,
+        predefined_split=predefined_split,
         param_grid=logreg_param_grid,
         scoring="accuracy",
         max_iter=5000,
-        verbose=int(VERBOSE),
+        verbose=VERBOSE,
         seed=SEED,
     )
 
-    evaluate_logistic_regression(
-        model=logreg_grid_search.best_estimator_, x_test=x_test, y_test=y_test
+    evaluate_model(
+        model=logreg_model,
+        model_name="Logistic Regression",
+        x_test=x_test,
+        y_test=y_test,
+        verbose=VERBOSE,
+        plot=True
+    )
+
+    find_misclassified(
+        model=logreg_model,
+        model_name="Logistic Regression",
+        x_test_raw=test_data_raw,
+        x_test_cleaned=test_data,
+        x_test=x_test,
+        y_test=y_test,
+        verbose=VERBOSE,
+        save=True
     )
 
     svm_param_grid = {"C": [0.001, 0.01, 0.1, 1, 10, 100]}
 
-    print("PRE SVM ")
-    svm_grid_search = perform_support_vector_machine(
-        x_train=x_train,
-        x_val=x_val,
-        y_train=y_train,
-        y_val=y_val,
+    svm_model = perform_support_vector_machine(
+        x_full=x_full,
+        y_full=y_full,
+        predefined_split=predefined_split,
         param_grid=svm_param_grid,
         scoring="accuracy",
-        verbose=int(VERBOSE),
+        verbose=VERBOSE,
     )
 
-    print("POST SVM ")
-    evaluate_support_vector_machine(
-        model=svm_grid_search.best_estimator_, x_test=x_test, y_test=y_test
+    evaluate_model(
+        model=svm_model,
+        model_name="Support Vector Machine",
+        x_test=x_test,
+        y_test=y_test,
+        verbose=VERBOSE,
+        plot=True
     )
 
-    print("POST EVAL")
+    find_misclassified(
+        model=svm_model,
+        model_name="Support Vector Machine",
+        x_test_raw=test_data_raw,
+        x_test_cleaned=test_data,
+        x_test=x_test,
+        y_test=y_test,
+        verbose=VERBOSE,
+        save=True
+    )
+
 if __name__ == "__main__":
     main()
