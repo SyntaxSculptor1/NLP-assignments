@@ -2,21 +2,18 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import LinearSVC
-from sklearn.model_selection import PredefinedSplit, GridSearchCV
-from sklearn.preprocessing import MaxAbsScaler
-from scipy import sparse
 from rich.console import Console
+from scipy import sparse
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV, PredefinedSplit
+from sklearn.preprocessing import MaxAbsScaler
+from sklearn.svm import LinearSVC
 
 console = Console()
 
+
 def scale_data_and_define_split(
-    x_train: sparse.csr_matrix,
-    x_val: sparse.csr_matrix,
-    y_train: pd.Series,
-    y_val: pd.Series,
-    verbose: bool = True
+    x_train: sparse.csr_matrix, x_val: sparse.csr_matrix, y_train: pd.Series, y_val: pd.Series, verbose: bool = True
 ) -> Tuple[sparse.csr_matrix, np.ndarray, PredefinedSplit]:
     """
     Scale the data and define the split.
@@ -54,12 +51,9 @@ def scale_data_and_define_split(
         console.print("Finished data scaling.")
 
     assert isinstance(x_full, sparse.csr_matrix)
-    
-    return (
-        x_full,
-        y_full,
-        predefined_split
-    )
+
+    return (x_full, y_full, predefined_split)
+
 
 def perform_logistic_regression(
     x_full: sparse.csr_matrix,
@@ -69,7 +63,7 @@ def perform_logistic_regression(
     scoring: str = "accuracy",
     max_iter: int = 5000,
     seed: int = 67,
-    verbose: bool = True
+    verbose: bool = True,
 ) -> LogisticRegression:
     """
     Perform Logistic Regression.
@@ -87,7 +81,7 @@ def perform_logistic_regression(
     Returns:
         LogisticRegression: The best estimator.
     """
-    
+
     if verbose:
         console.print("\n [bold white] Performing Logistic Regression: [/bold white]")
         console.print("Performing Grid Search for Logistic Regression...")
@@ -107,6 +101,7 @@ def perform_logistic_regression(
         console.print("Finished Grid Search for Logistic Regression.")
 
     return grid_search.best_estimator_
+
 
 def perform_support_vector_machine(
     x_full: sparse.csr_matrix,
@@ -130,7 +125,7 @@ def perform_support_vector_machine(
     Returns:
         LinearSVC: The best estimator.
     """
-    
+
     if verbose:
         console.print("\n [bold white] Performing Support Vector Machine: [/bold white]")
         console.print("Performing Grid Search for Support Vector Machine...")
@@ -138,7 +133,7 @@ def perform_support_vector_machine(
     grid_search = GridSearchCV(
         estimator=LinearSVC(),
         param_grid=param_grid,
-        cv=predefined_split, 
+        cv=predefined_split,
         scoring=scoring,
         verbose=int(verbose),
         n_jobs=-1,

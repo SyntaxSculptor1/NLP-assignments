@@ -1,20 +1,17 @@
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import LinearSVC
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 from pathlib import Path
+
+import pandas as pd
 from rich.console import Console
 from scipy import sparse
-import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, confusion_matrix, f1_score
+from sklearn.svm import LinearSVC
 
 console = Console()
 
+
 def evaluate_model(
-    model: LogisticRegression | LinearSVC,
-    model_name: str,
-    x_test: sparse.csr_matrix,
-    y_test: pd.Series,
-    verbose: bool = True,
-    plot: bool = True
+    model: LogisticRegression | LinearSVC, model_name: str, x_test: sparse.csr_matrix, y_test: pd.Series, verbose: bool = True, plot: bool = True
 ) -> None:
     """
     Evaluate the performance of a given model on the test set.
@@ -26,7 +23,7 @@ def evaluate_model(
         y_test (pd.Series): The test labels.
         verbose (bool, optional): Whether to print verbose output. Defaults to True.
         plot (bool, optional): Whether to plot the confusion matrix. Defaults to True.
-    
+
     Returns:
         None
     """
@@ -34,10 +31,10 @@ def evaluate_model(
         console.print(f"\n [bold white] Evaluating {model_name}: [/bold white]")
 
     y_pred = model.predict(x_test)
-    c = model.get_params()['C']
-    accuracy = accuracy_score(y_true= y_test, y_pred= y_pred)
+    c = model.get_params()["C"]
+    accuracy = accuracy_score(y_true=y_test, y_pred=y_pred)
     f1 = f1_score(y_true=y_test, y_pred=y_pred, average="macro")
-    cm = confusion_matrix(y_true= y_test, y_pred= y_pred)
+    cm = confusion_matrix(y_true=y_test, y_pred=y_pred)
 
     console.print(f"Model - Support Vector Machine (C = {c})")
     console.print("Accuracy:", accuracy)
@@ -69,7 +66,7 @@ def find_misclassified(
     text_column: str = "text",
     label_column: str = "label",
     verbose: bool = True,
-    save: bool = True
+    save: bool = True,
 ) -> pd.DataFrame:
     """
     Find misclassified examples in the test set.
@@ -85,7 +82,7 @@ def find_misclassified(
         label_column (str, optional): The column containing the label. Defaults to "label".
         verbose (bool, optional): Whether to print verbose output. Defaults to True.
         save (bool, optional): Whether to save the misclassified examples. Defaults to True.
-    
+
     Returns:
         pd.DataFrame: The misclassified examples.
     """
@@ -109,7 +106,5 @@ def find_misclassified(
     if verbose:
         console.print(f"Found {len(misclassified)} misclassified examples.")
         console.print(misclassified.head())
-        
 
     return misclassified
-    

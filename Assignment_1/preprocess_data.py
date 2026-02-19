@@ -1,22 +1,20 @@
-import pandas as pd
-from typing import Tuple, List
-import re
 import html
+import re
 import string
+from typing import List, Tuple
+
+import pandas as pd
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-from sklearn.feature_extraction.text import TfidfVectorizer
-from scipy import sparse
 from rich.console import Console
+from scipy import sparse
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 console = Console()
 
+
 def merge_title_description(
-    datasets: List[pd.DataFrame],
-    title_column: str = "title",
-    description_column: str = "description",
-    new_column: str = "text",
-    verbose: bool = True
+    datasets: List[pd.DataFrame], title_column: str = "title", description_column: str = "description", new_column: str = "text", verbose: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     Merge the title and description columns into a new column.
@@ -37,11 +35,9 @@ def merge_title_description(
     cleaned_datasets = tuple(dataset.copy(deep=True) for dataset in datasets)
 
     for dataset in cleaned_datasets:
-        dataset[new_column] = (
-            dataset[title_column].astype(str) + " " + dataset[description_column].astype(str)
-        )
+        dataset[new_column] = dataset[title_column].astype(str) + " " + dataset[description_column].astype(str)
         dataset.drop([title_column, description_column], axis=1, inplace=True)
-    
+
     if verbose:
         console.print(f"Merged {title_column} and {description_column} into {new_column}.")
 
@@ -49,11 +45,10 @@ def merge_title_description(
 
     return cleaned_datasets
 
-def pre_tokenization_normalization_helper(
-    text: str
-) -> str:
+
+def pre_tokenization_normalization_helper(text: str) -> str:
     """
-    Pre-tokenization normalization helper. By default, this function normalizes the text by removing HTML tags, 
+    Pre-tokenization normalization helper. By default, this function normalizes the text by removing HTML tags,
     removing extra spaces, and converting the text to lowercase.
 
     Args:
@@ -67,11 +62,9 @@ def pre_tokenization_normalization_helper(
     clean_text = re.sub(r"\s+", " ", clean_text).strip()
     clean_text = clean_text.lower()
     return clean_text
-    
-def post_tokenization_normalization_helper(
-    text: List[str],
-    lemmatizer: WordNetLemmatizer
-) -> str:
+
+
+def post_tokenization_normalization_helper(text: List[str], lemmatizer: WordNetLemmatizer) -> str:
     """
     Post tokenization normalization helper. By default, this function normalizes the text by removing punctuation,
     removing empty strings, and lemmatizing the words.
@@ -94,17 +87,15 @@ def post_tokenization_normalization_helper(
         word_lemma = lemmatizer.lemmatize(word)
 
         cleaned_text.append(word_lemma)
-    
+
     return " ".join(cleaned_text)
 
+
 def text_cleaning(
-    datasets: List[pd.DataFrame],
-    lemmatizer: WordNetLemmatizer,
-    column: str = "text",
-    verbose: bool = True
+    datasets: List[pd.DataFrame], lemmatizer: WordNetLemmatizer, column: str = "text", verbose: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
-    Text cleaning. By default, this function normalizes the text by removing HTML tags, removing extra spaces, 
+    Text cleaning. By default, this function normalizes the text by removing HTML tags, removing extra spaces,
     converting the text to lowercase, removing punctuation, removing empty strings, and lemmatizing the words.
 
     Args:
@@ -116,7 +107,7 @@ def text_cleaning(
     Returns:
         Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: The cleaned datasets.
     """
-    
+
     if verbose:
         console.print(f"\n [bold white] Cleaning {column} by normalization: [/bold white]")
 
@@ -134,12 +125,9 @@ def text_cleaning(
 
     return cleaned_datasets
 
+
 def tfidf_transform(
-    train_texts: pd.Series,
-    validation_texts: pd.Series,
-    test_texts: pd.Series,
-    vectorizer: TfidfVectorizer,
-    verbose: bool = True
+    train_texts: pd.Series, validation_texts: pd.Series, test_texts: pd.Series, vectorizer: TfidfVectorizer, verbose: bool = True
 ) -> List[sparse.csr_matrix]:
     """
     TF-IDF transformation.
@@ -154,7 +142,7 @@ def tfidf_transform(
     Returns:
         List[sparse.csr_matrix]: The transformed texts.
     """
-    
+
     if verbose:
         console.print(f"\n [bold white] TF-IDF transformation: [/bold white]")
 
