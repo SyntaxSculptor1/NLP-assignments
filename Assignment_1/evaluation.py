@@ -4,14 +4,24 @@ import pandas as pd
 from rich.console import Console
 from scipy import sparse
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, confusion_matrix, f1_score
+from sklearn.metrics import (
+    ConfusionMatrixDisplay,
+    accuracy_score,
+    confusion_matrix,
+    f1_score,
+)
 from sklearn.svm import LinearSVC
 
 console = Console()
 
 
 def evaluate_model(
-    model: LogisticRegression | LinearSVC, model_name: str, x_test: sparse.csr_matrix, y_test: pd.Series, verbose: bool = True, plot: bool = True
+    model: LogisticRegression | LinearSVC,
+    model_name: str,
+    x_test: sparse.csr_matrix,
+    y_test: pd.Series,
+    verbose: bool = True,
+    plot: bool = True,
 ) -> None:
     """
     Evaluate the performance of a given model on the test set.
@@ -36,7 +46,7 @@ def evaluate_model(
     f1 = f1_score(y_true=y_test, y_pred=y_pred, average="macro")
     cm = confusion_matrix(y_true=y_test, y_pred=y_pred)
 
-    console.print(f"Model - Support Vector Machine (C = {c})")
+    console.print(f"Model - {model_name} (C = {c})")
     console.print("Accuracy:", accuracy)
     console.print("F1 Score:", f1)
 
@@ -45,7 +55,9 @@ def evaluate_model(
     console.print(cm)
 
     if plot:
-        save_path = Path(__file__).parent / "plots" / f"{model_name}_confusion_matrix.png"
+        save_path = (
+            Path(__file__).parent / "plots" / f"{model_name}_confusion_matrix.png"
+        )
 
         display = ConfusionMatrixDisplay(cm, display_labels=model.classes_)
         display.plot()
@@ -95,12 +107,16 @@ def find_misclassified(
     misclassified = x_test_raw[mask]
     misclassified.insert(loc=0, column="Predicted Class", value=y_pred[mask])
     misclassified.insert(loc=0, column="Actual Class", value=y_test[mask])
-    misclassified.insert(loc=3, column="Cleaned_Text", value=x_test_cleaned[text_column][mask])
+    misclassified.insert(
+        loc=3, column="Cleaned_Text", value=x_test_cleaned[text_column][mask]
+    )
     misclassified.rename(columns={text_column: "Raw_Text"}, inplace=True)
     misclassified = misclassified.reset_index(drop=True).drop(label_column, axis=1)
 
     if save:
-        save_path = Path(__file__).parent / "misclassified" / f"{model_name}_misclassified.csv"
+        save_path = (
+            Path(__file__).parent / "misclassified" / f"{model_name}_misclassified.csv"
+        )
         misclassified.to_csv(save_path, index=False)
 
     if verbose:
