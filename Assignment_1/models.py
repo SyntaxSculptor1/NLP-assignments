@@ -6,10 +6,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import PredefinedSplit, GridSearchCV
 from sklearn.preprocessing import MaxAbsScaler
-from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 from scipy import sparse
 from rich.console import Console
-from pathlib import Path
 
 console = Console()
 
@@ -20,6 +18,19 @@ def scale_data_and_define_split(
     y_val: pd.Series,
     verbose: bool = True
 ) -> Tuple[sparse.csr_matrix, np.ndarray, PredefinedSplit]:
+    """
+    Scale the data and define the split.
+
+    Args:
+        x_train (sparse.csr_matrix): The training features.
+        x_val (sparse.csr_matrix): The validation features.
+        y_train (pd.Series): The training labels.
+        y_val (pd.Series): The validation labels.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        Tuple[sparse.csr_matrix, np.ndarray, PredefinedSplit]: The scaled data, labels, and split.
+    """
     if verbose:
         console.print(f"\n [bold white] Scaling data and defining split: [/bold white]")
 
@@ -60,6 +71,22 @@ def perform_logistic_regression(
     seed: int = 67,
     verbose: bool = True
 ) -> LogisticRegression:
+    """
+    Perform Logistic Regression.
+
+    Args:
+        x_full (sparse.csr_matrix): The full features.
+        y_full (np.ndarray): The full labels.
+        predefined_split (PredefinedSplit): The predefined split.
+        param_grid (dict): The parameter grid.
+        scoring (str, optional): The scoring metric. Defaults to "accuracy".
+        max_iter (int, optional): The maximum number of iterations. Defaults to 5000.
+        seed (int, optional): The random seed. Defaults to 67.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        LogisticRegression: The best estimator.
+    """
     
     if verbose:
         console.print("\n [bold white] Performing Logistic Regression: [/bold white]")
@@ -89,6 +116,20 @@ def perform_support_vector_machine(
     scoring: str = "accuracy",
     verbose: bool = True,
 ) -> LinearSVC:
+    """
+    Perform Support Vector Machine.
+
+    Args:
+        x_full (sparse.csr_matrix): The full features.
+        y_full (np.ndarray): The full labels.
+        predefined_split (PredefinedSplit): The predefined split.
+        param_grid (dict): The parameter grid.
+        scoring (str, optional): The scoring metric. Defaults to "accuracy".
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        LinearSVC: The best estimator.
+    """
     
     if verbose:
         console.print("\n [bold white] Performing Support Vector Machine: [/bold white]")
@@ -109,4 +150,3 @@ def perform_support_vector_machine(
         console.print("Performed Grid Search for Support Vector Machine.")
 
     return grid_search.best_estimator_
-

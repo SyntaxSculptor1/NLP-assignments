@@ -8,9 +8,6 @@ from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy import sparse
 from rich.console import Console
-import numpy as np
-from sklearn.model_selection import PredefinedSplit
-from sklearn.preprocessing import MaxAbsScaler
 
 console = Console()
 
@@ -21,6 +18,19 @@ def merge_title_description(
     new_column: str = "text",
     verbose: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Merge the title and description columns into a new column.
+
+    Args:
+        datasets (List[pd.DataFrame]): The datasets to merge.
+        title_column (str, optional): The column containing the title. Defaults to "title".
+        description_column (str, optional): The column containing the description. Defaults to "description".
+        new_column (str, optional): The name of the new column. Defaults to "text".
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: The merged datasets.
+    """
     if verbose:
         console.print(f"\n [bold white] Merging {title_column} and {description_column} columns into {new_column}: [/bold white]")
 
@@ -42,6 +52,16 @@ def merge_title_description(
 def pre_tokenization_normalization_helper(
     text: str
 ) -> str:
+    """
+    Pre-tokenization normalization helper. By default, this function normalizes the text by removing HTML tags, 
+    removing extra spaces, and converting the text to lowercase.
+
+    Args:
+        text (str): The text to normalize.
+
+    Returns:
+        str: The normalized text.
+    """
     text = html.unescape(text)
     clean_text = re.sub(r"<[^>]+>", "", text)
     clean_text = re.sub(r"\s+", " ", clean_text).strip()
@@ -52,6 +72,17 @@ def post_tokenization_normalization_helper(
     text: List[str],
     lemmatizer: WordNetLemmatizer
 ) -> str:
+    """
+    Post tokenization normalization helper. By default, this function normalizes the text by removing punctuation,
+    removing empty strings, and lemmatizing the words.
+
+    Args:
+        text (List[str]): The text to normalize.
+        lemmatizer (WordNetLemmatizer): The lemmatizer to use.
+
+    Returns:
+        str: The normalized text.
+    """
     cleaned_text = []
 
     for word in text:
@@ -72,6 +103,19 @@ def text_cleaning(
     column: str = "text",
     verbose: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Text cleaning. By default, this function normalizes the text by removing HTML tags, removing extra spaces, 
+    converting the text to lowercase, removing punctuation, removing empty strings, and lemmatizing the words.
+
+    Args:
+        datasets (List[pd.DataFrame]): The datasets to clean.
+        lemmatizer (WordNetLemmatizer): The lemmatizer to use.
+        column (str, optional): The column to clean. Defaults to "text".
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: The cleaned datasets.
+    """
     
     if verbose:
         console.print(f"\n [bold white] Cleaning {column} by normalization: [/bold white]")
@@ -97,6 +141,19 @@ def tfidf_transform(
     vectorizer: TfidfVectorizer,
     verbose: bool = True
 ) -> List[sparse.csr_matrix]:
+    """
+    TF-IDF transformation.
+
+    Args:
+        train_texts (pd.Series): The training texts.
+        validation_texts (pd.Series): The validation texts.
+        test_texts (pd.Series): The test texts.
+        vectorizer (TfidfVectorizer): The vectorizer to use.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        List[sparse.csr_matrix]: The transformed texts.
+    """
     
     if verbose:
         console.print(f"\n [bold white] TF-IDF transformation: [/bold white]")

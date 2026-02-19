@@ -12,6 +12,12 @@ from rich.panel import Panel
 console = Console()
 
 def argument_parsing() -> argparse.Namespace:
+    """
+    Parse command-line arguments.
+
+    Returns:
+        argparse.Namespace: Parsed arguments.
+    """
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -37,6 +43,13 @@ def argument_parsing() -> argparse.Namespace:
 
 
 def main() -> None:
+    """
+    Main function
+    
+    Returns:
+        None
+    """
+
     program_title = Panel(
         "[bold white] Assignment 1 - News Classification using TF-IDF features [/bold white]"
     )

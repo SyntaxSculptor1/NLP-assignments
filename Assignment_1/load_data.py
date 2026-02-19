@@ -8,6 +8,15 @@ from rich.console import Console
 console = Console()
 
 def load_nltk_models(verbose: bool = True) -> None:
+    """
+    Load the NLTK models.
+
+    Args:
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        None
+    """
     if verbose:
         console.print("[bold white] Loading NLTK models: [/bold white]")
 
@@ -23,6 +32,18 @@ def load_data(
     seed: int = 67,
     verbose: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Load the data from the dataset.
+
+    Args:
+        dataset (str, optional): The dataset to load. Defaults to "sh0416/ag_news".
+        split (float, optional): The split ratio. Defaults to 0.1.
+        seed (int, optional): The random seed. Defaults to 67.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: The train, validation, and test data.
+    """
     if verbose:
         console.print(f"\n[bold white] Loading data from {dataset} with split ratio {split}: [/bold white]")
     

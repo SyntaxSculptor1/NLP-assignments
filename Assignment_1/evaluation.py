@@ -16,6 +16,20 @@ def evaluate_model(
     verbose: bool = True,
     plot: bool = True
 ) -> None:
+    """
+    Evaluate the performance of a given model on the test set.
+
+    Args:
+        model (LogisticRegression | LinearSVC): The model to evaluate.
+        model_name (str): The name of the model.
+        x_test (sparse.csr_matrix): The test features.
+        y_test (pd.Series): The test labels.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+        plot (bool, optional): Whether to plot the confusion matrix. Defaults to True.
+    
+    Returns:
+        None
+    """
     if verbose:
         console.print(f"\n [bold white] Evaluating {model_name}: [/bold white]")
 
@@ -57,6 +71,24 @@ def find_misclassified(
     verbose: bool = True,
     save: bool = True
 ) -> pd.DataFrame:
+    """
+    Find misclassified examples in the test set.
+
+    Args:
+        model (LogisticRegression | LinearSVC): The model to evaluate.
+        model_name (str): The name of the model.
+        x_test_raw (pd.DataFrame): The raw test features.
+        x_test_cleaned (pd.DataFrame): The cleaned test features.
+        x_test (sparse.csr_matrix): The test features.
+        y_test (pd.Series): The test labels.
+        text_column (str, optional): The column containing the text. Defaults to "text".
+        label_column (str, optional): The column containing the label. Defaults to "label".
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+        save (bool, optional): Whether to save the misclassified examples. Defaults to True.
+    
+    Returns:
+        pd.DataFrame: The misclassified examples.
+    """
     if verbose:
         console.print(f"\n [bold white] Finding misclassified examples: [/bold white]")
 
