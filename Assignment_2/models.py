@@ -102,7 +102,7 @@ def build_lstm(
         Input(shape=(), dtype=tf.string),
         vectorizer,
         Embedding(vocab_size, embedding_size),
-        Bidirectional(LSTM(lstm_size, return_sequences=True)),
+        Bidirectional(LSTM(lstm_size, return_sequences=False)),
         Dense(dense_size, activation="relu"),
         Dropout(dropout),
         Dense(num_classes, activation="softmax")
@@ -130,6 +130,7 @@ def perform_lstm(
     dropout: float = 0.0,
     verbose: bool = True
 ) -> Sequential:
+
     model = build_lstm(
         vectorizer=vectorizer,
         num_classes=num_classes,

@@ -3,23 +3,25 @@ from pathlib import Path
 import pandas as pd
 from rich.console import Console
 from scipy import sparse
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
     accuracy_score,
     confusion_matrix,
     f1_score,
 )
-from sklearn.svm import LinearSVC
+import numpy as np
+from keras import Sequential
+
+from utils import CATEGORIES
 
 console = Console()
 
 
 def evaluate_model(
-    model: LogisticRegression | LinearSVC,
+    model: Sequential,
     model_name: str,
-    x_test: sparse.csr_matrix,
-    y_test: pd.Series,
+    x_test: np.ndarray,
+    y_test: np.ndarray,
     verbose: bool = True,
     plot: bool = True,
 ) -> None:
@@ -27,10 +29,10 @@ def evaluate_model(
     Evaluate the performance of a given model on the test set.
 
     Args:
-        model (LogisticRegression | LinearSVC): The model to evaluate.
+        model (Sequential): The model to evaluate.
         model_name (str): The name of the model.
-        x_test (sparse.csr_matrix): The test features.
-        y_test (pd.Series): The test labels.
+        x_test (np.ndarray): The test features.
+        y_test (np.ndarray): The test labels.
         verbose (bool, optional): Whether to print verbose output. Defaults to True.
         plot (bool, optional): Whether to plot the confusion matrix. Defaults to True.
 
@@ -41,12 +43,14 @@ def evaluate_model(
         console.print(f"\n [bold white] Evaluating {model_name}: [/bold white]")
 
     y_pred = model.predict(x_test)
-    c = model.get_params()["C"]
+
+    y_pred, y_test = np.argmax(y_pred, axis=1), np.argmax(y_test, axis=1)
+
     accuracy = accuracy_score(y_true=y_test, y_pred=y_pred)
     f1 = f1_score(y_true=y_test, y_pred=y_pred, average="macro")
     cm = confusion_matrix(y_true=y_test, y_pred=y_pred)
 
-    console.print(f"Model - {model_name} (C = {c})")
+    console.print(f"Model - {model_name}")
     console.print("Accuracy:", accuracy)
     console.print("F1 Score:", f1)
 
@@ -59,9 +63,9 @@ def evaluate_model(
             Path(__file__).parent / "plots" / f"{model_name}_confusion_matrix.png"
         )
 
-        display = ConfusionMatrixDisplay(cm, display_labels=model.classes_)
+        display = ConfusionMatrixDisplay(cm, display_labels=CATEGORIES)
         display.plot()
-        display.ax_.set_title(f"Confusion Matrix of {model_name} (C = {c})")
+        display.ax_.set_title(f"Confusion Matrix of {model_name}")
         display.figure_.savefig(str(save_path))
 
     if verbose:
@@ -69,12 +73,11 @@ def evaluate_model(
 
 
 def find_misclassified(
-    model: LogisticRegression | LinearSVC,
+    model: Sequential,
     model_name: str,
-    x_test_raw: pd.DataFrame,
-    x_test_cleaned: pd.DataFrame,
-    x_test: sparse.csr_matrix,
-    y_test: pd.Series,
+    x_test_raw: np.ndarray,
+    x_test_cleaned: np.ndarray,
+    y_test: np.ndarray,
     text_column: str = "text",
     label_column: str = "label",
     verbose: bool = True,
@@ -84,12 +87,11 @@ def find_misclassified(
     Find misclassified examples in the test set.
 
     Args:
-        model (LogisticRegression | LinearSVC): The model to evaluate.
+        model (Sequential): The model to evaluate.
         model_name (str): The name of the model.
-        x_test_raw (pd.DataFrame): The raw test features.
-        x_test_cleaned (pd.DataFrame): The cleaned test features.
-        x_test (sparse.csr_matrix): The test features.
-        y_test (pd.Series): The test labels.
+        x_test_raw (np.ndarray): The raw test features.
+        x_test_cleaned (np.ndarray): The cleaned test features.
+        y_test (np.ndarray): The test labels.
         text_column (str, optional): The column containing the text. Defaults to "text".
         label_column (str, optional): The column containing the label. Defaults to "label".
         verbose (bool, optional): Whether to print verbose output. Defaults to True.
@@ -101,15 +103,28 @@ def find_misclassified(
     if verbose:
         console.print(f"\n [bold white] Finding misclassified examples: [/bold white]")
 
-    y_pred = model.predict(x_test)
+    y_pred = model.predict(x_test_cleaned)
+
+    y_pred, y_test = np.argmax(y_pred, axis=1), np.argmax(y_test, axis=1)
+
+    y_pred, y_test = np.array([CATEGORIES[x] for x in y_pred]), np.array([CATEGORIES[x] for x in y_test])
+
+
 
     mask = y_pred != y_test
+
+    print(x_test_cleaned)
+    print(mask)
+
     misclassified = x_test_raw[mask]
+
     misclassified.insert(loc=0, column="Predicted Class", value=y_pred[mask])
     misclassified.insert(loc=0, column="Actual Class", value=y_test[mask])
+
     misclassified.insert(
-        loc=3, column="Cleaned_Text", value=x_test_cleaned[text_column][mask]
+        loc=3, column="Cleaned_Text", value=x_test_cleaned[mask]
     )
+
     misclassified.rename(columns={text_column: "Raw_Text"}, inplace=True)
     misclassified = misclassified.reset_index(drop=True).drop(label_column, axis=1)
 
