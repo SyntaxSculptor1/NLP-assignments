@@ -124,3 +124,30 @@ def text_cleaning(
     return cleaned_datasets
 
 
+def onehotencode_labels(
+    y_train: pd.Series,
+    y_val: pd.Series,
+    y_test: pd.Series,
+    verbose: bool = True
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    if verbose:
+        console.print(f"\n [bold white] One-hot encoding labels: [/bold white]")
+    
+    y_full = pd.concat(
+        [y_train, y_val, y_test],
+        ignore_index=True,
+    )
+
+    y_full = pd.get_dummies(y_full).astype(int)
+
+    y_train_encoded, y_val_encoded, y_test_encoded = (
+        y_full[: len(y_train)],
+        y_full[len(y_train) : len(y_train) + len(y_val)],
+        y_full[len(y_train) + len(y_val) :],
+    )
+
+    if verbose:
+        console.print("One-hot encoded labels.")
+
+    return y_train_encoded, y_val_encoded, y_test_encoded
+

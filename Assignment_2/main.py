@@ -1,22 +1,45 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 import argparse
 
-import pandas as pd
-
-from models import perform_cnn, perform_lstm
+from models import training_cnn, training_lstm
 from evaluation import evaluate_model, find_misclassified
 from load_data import load_data, load_nltk_models
 from keras.layers import TextVectorization
 from nltk.stem import WordNetLemmatizer
-from preprocess_data import merge_title_description, text_cleaning
+from preprocess_data import merge_title_description, text_cleaning, onehotencode_labels
 from rich.console import Console
 from rich.panel import Panel
 
 import warnings
-
+import tensorflow as tf
+import absl.logging
 warnings.filterwarnings("ignore")
+tf.get_logger().setLevel('ERROR')
+absl.logging.set_verbosity(absl.logging.ERROR)
 
 console = Console()
 
+models_mapping = {
+        "CNN-Dropout-0": {
+            "dropout": 0.0,
+            "model": training_cnn,
+        },
+        "CNN-Dropout-0.3": {
+            "dropout": 0.3,
+            "model": training_cnn,
+        },
+        "LSTM-Dropout-0": {
+            "dropout": 0.0,
+            "model": training_lstm,
+        },
+        "LSTM-Dropout-0.3": {
+            "dropout": 0.3,
+            "model": training_lstm,
+        },
+    }
 
 
 def argument_parsing() -> argparse.Namespace:
@@ -122,18 +145,16 @@ def main() -> None:
         test_data["text"].to_numpy(),
     )
 
-    y_full = pd.concat(
-        [train_data["label"], validation_data["label"], test_data["label"]],
-        ignore_index=True,
+    y_train, y_val, y_test = onehotencode_labels(
+        y_train=train_data["label"],
+        y_val=validation_data["label"],
+        y_test=test_data["label"],
     )
 
-    y_full = pd.get_dummies(y_full).astype(int)
-
-
     y_train, y_val, y_test = (
-        y_full[: len(train_data)].to_numpy(),
-        y_full[len(train_data) : len(train_data) + len(validation_data)].to_numpy(),
-        y_full[len(train_data) + len(validation_data) :].to_numpy(),
+        y_train.to_numpy(),
+        y_val.to_numpy(),
+        y_test.to_numpy(),
     )
 
     vectorizer = TextVectorization(
@@ -144,21 +165,36 @@ def main() -> None:
 
     vectorizer.adapt(x_train)
 
+    for model_name, model_info in models_mapping.items():
+        model = model_info["model"](
+            model_name=model_name,
+            x_train=x_train,
+            y_train=y_train,
+            x_val=x_val,
+            y_val=y_val,
+            vectorizer=vectorizer,
+            epochs=EPOCHS,
+            batch_size=BATCH_SIZE,
+            dropout=model_info["dropout"],
+            verbose=VERBOSE,
+        )
 
-    model = perform_cnn(
-        x_train=x_train,
-        y_train=y_train,
-        x_val=x_val,
-        y_val=y_val,
-        vectorizer=vectorizer,
-        padding_length=PADDING,
-        epochs=EPOCHS,
-        batch_size=BATCH_SIZE,
-        verbose=VERBOSE,
-    )
+        evaluate_model(
+            model=model,
+            x_test=x_test,
+            y_test=y_test,
+            model_name=model_name,
+            verbose=VERBOSE,
+        )
 
-    evaluate_model(model=model, model_name="CNN", x_test=x_test, y_test=y_test)
+        find_misclassified(
+            model=model,
+            model_name=model_name,
+            x_test_raw=test_data_raw,
+            x_test_cleaned=x_test,
+            y_test=y_test,
+            verbose=VERBOSE,
+        )
 
-    find_misclassified(model=model, model_name="CNN", x_test_raw=test_data_raw, x_test_cleaned=x_test, y_test=y_test)
 if __name__ == "__main__":
     main()

@@ -40,7 +40,7 @@ def evaluate_model(
         None
     """
     if verbose:
-        console.print(f"\n [bold white] Evaluating {model_name}: [/bold white]")
+        console.print(f"\n [bold white] Evaluating model: {model_name} [/bold white]")
 
     y_pred = model.predict(x_test)
 
@@ -50,8 +50,7 @@ def evaluate_model(
     f1 = f1_score(y_true=y_test, y_pred=y_pred, average="macro")
     cm = confusion_matrix(y_true=y_test, y_pred=y_pred)
 
-    console.print(f"Model - {model_name}")
-    console.print("Accuracy:", accuracy)
+    console.print("\nAccuracy:", accuracy)
     console.print("F1 Score:", f1)
 
     console.print("Confusion Matrix:")
@@ -69,13 +68,13 @@ def evaluate_model(
         display.figure_.savefig(str(save_path))
 
     if verbose:
-        console.print(f"Finished evaluating {model_name}.")
+        console.print(f"\n [white] Finished evaluating {model_name}. [/white]")
 
 
 def find_misclassified(
     model: Sequential,
     model_name: str,
-    x_test_raw: np.ndarray,
+    x_test_raw: pd.DataFrame,
     x_test_cleaned: np.ndarray,
     y_test: np.ndarray,
     text_column: str = "text",
@@ -89,7 +88,7 @@ def find_misclassified(
     Args:
         model (Sequential): The model to evaluate.
         model_name (str): The name of the model.
-        x_test_raw (np.ndarray): The raw test features.
+        x_test_raw (pd.DataFrame): The raw test features.
         x_test_cleaned (np.ndarray): The cleaned test features.
         y_test (np.ndarray): The test labels.
         text_column (str, optional): The column containing the text. Defaults to "text".
@@ -101,7 +100,7 @@ def find_misclassified(
         pd.DataFrame: The misclassified examples.
     """
     if verbose:
-        console.print(f"\n [bold white] Finding misclassified examples: [/bold white]")
+        console.print(f"\n [bold white] Finding misclassified examples: {model_name} [/bold white]")
 
     y_pred = model.predict(x_test_cleaned)
 
@@ -109,13 +108,7 @@ def find_misclassified(
 
     y_pred, y_test = np.array([CATEGORIES[x] for x in y_pred]), np.array([CATEGORIES[x] for x in y_test])
 
-
-
     mask = y_pred != y_test
-
-    print(x_test_cleaned)
-    print(mask)
-
     misclassified = x_test_raw[mask]
 
     misclassified.insert(loc=0, column="Predicted Class", value=y_pred[mask])
@@ -135,7 +128,7 @@ def find_misclassified(
         misclassified.to_csv(save_path, index=False)
 
     if verbose:
-        console.print(f"Found {len(misclassified)} misclassified examples.")
+        console.print(f"\n Found {len(misclassified)} misclassified examples.")
         console.print(misclassified.head())
 
     return misclassified

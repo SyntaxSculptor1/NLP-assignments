@@ -3,6 +3,9 @@ import tensorflow as tf
 from keras import Sequential
 from keras.layers import Dense, Dropout, GlobalMaxPool1D, Conv1D, Input, Embedding, TextVectorization, Bidirectional, LSTM
 from keras.callbacks import EarlyStopping
+from rich.console import Console
+
+console = Console()
 
 def build_cnn(
     vectorizer: TextVectorization,
@@ -28,7 +31,8 @@ def build_cnn(
     ])
     
 
-def perform_cnn(
+def training_cnn(
+    model_name: str,
     x_train: np.ndarray,
     y_train: np.ndarray,
     x_val: np.ndarray,
@@ -51,6 +55,9 @@ def perform_cnn(
     dropout: float = 0.0,
     verbose: bool = True
 ) -> Sequential:
+    if verbose:
+        console.print(f"\n [bold white] Training model: {model_name} [/bold white]")
+
     model = build_cnn(
         vectorizer=vectorizer,
         num_classes=num_classes,
@@ -109,7 +116,8 @@ def build_lstm(
     ])
 
 
-def perform_lstm(
+def training_lstm(
+    model_name: str,
     x_train: np.ndarray,
     y_train: np.ndarray,
     x_val: np.ndarray,
@@ -130,6 +138,9 @@ def perform_lstm(
     dropout: float = 0.0,
     verbose: bool = True
 ) -> Sequential:
+    
+    if verbose:
+        console.print(f"\n [bold white] Training model: {model_name} [/bold white]")
 
     model = build_lstm(
         vectorizer=vectorizer,
