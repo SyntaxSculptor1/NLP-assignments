@@ -69,6 +69,10 @@ We allow for argument parsing, these arguments include:
 - --split - The train-validation split
 - --seed - The seed for code reproducibility
 - --verbose - Setting verbosity
+- --padding - The padding of text sequences
+- --max_tokens - Maximum number of unique tokens allowed to pass
+- --epochs - Number of epochs to run
+- --batch_size - Batch size for training CNN and LSTM
 
 ## Code reproducibility
 In our report, we use the default properties which are as follows:
@@ -76,6 +80,54 @@ In our report, we use the default properties which are as follows:
 - Split - 0.1
 - Seed - 67
 - Verbose - True
+- Padding - 100
+- Max Tokens - 10000
+- Epochs - 100
+- Batch size - 32
+
+The model architecture of the CNN is as follows:
+- Vectorizer Layer -> Embedding layer -> 1D Convolutional layer -> 1D Global Max Pooling layer -> 1 Dense Layer -> 1 Dropout layer -> 1 Classification Head
+
+- Vectorizer layer:
+    - Max Tokens - 10000
+    - Padding - 100
+- Embedding layer:
+    - Vocab size - 10000
+    - Embedding size - 100
+- 1D Convolutional layer:
+    - Number of filters - 128
+    - Kernel Size - 5
+    - Activation Function - "relu"
+- 1D Global Max Pooling layer:
+    - No parameters
+- Dense layer:
+    - Size - 64
+    - Activation Function - "relu"
+- Dropout layer:
+    - Dropout layer was variable, either 0 or 0.3 (ablation)
+- Classification head:
+    - Size - 4
+    - Activation function: "softmax"
+
+The model architecture of the LSTM is as follows:
+- Vectorizer Layer -> Embedding layer -> 1 Bidirectional LSTM layer -> 1 Dense layer -> 1 Dropout layer -> 1 Classification Head
+
+- Vectorizer layer:
+    - Max Tokens - 10000
+    - Padding - 100
+- Embedding layer:
+    - Vocab size - 10000
+    - Embedding size - 100
+- LSTM layer:
+    - Size - 64
+- Dense layer:
+    - Size - 64
+    - Activation Function - "relu"
+- Dropout layer:
+    - Dropout layer was variable, either 0 or 0.3 (ablation)
+- Classification head:
+    - Size - 4
+    - Activation function: "softmax"
 
 ## Credits
 Credits go to: [@ChrChirag](https://github.com/ChrChirag)  [@Cistaroth](https://github.com/Cistaroth) [@SyntaxSculptor1](https://github.com/SyntaxSculptor1)

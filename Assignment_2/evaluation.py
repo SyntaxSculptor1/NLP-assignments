@@ -20,6 +20,7 @@ console = Console()
 def evaluate_model(
     model: Sequential,
     model_name: str,
+    set_name: str,
     x_test: np.ndarray,
     y_test: np.ndarray,
     verbose: bool = True,
@@ -40,7 +41,7 @@ def evaluate_model(
         None
     """
     if verbose:
-        console.print(f"\n [bold white] Evaluating model: {model_name} [/bold white]")
+        console.print(f"\n [bold white] Evaluating model: {model_name} on {set_name} [/bold white]")
 
     y_pred = model.predict(x_test)
 
@@ -59,16 +60,16 @@ def evaluate_model(
 
     if plot:
         save_path = (
-            Path(__file__).parent / "plots" / f"{model_name}_confusion_matrix.png"
+            Path(__file__).parent / "plots" / f"{model_name}_confusion_matrix_{set_name}.png"
         )
 
         display = ConfusionMatrixDisplay(cm, display_labels=CATEGORIES)
         display.plot()
-        display.ax_.set_title(f"Confusion Matrix of {model_name}")
+        display.ax_.set_title(f"Confusion Matrix of {model_name} on {set_name}")
         display.figure_.savefig(str(save_path))
 
     if verbose:
-        console.print(f"\n [white] Finished evaluating {model_name}. [/white]")
+        console.print(f"\n [white] Finished evaluating {model_name} on {set_name}. [/white]")
 
 
 def find_misclassified(

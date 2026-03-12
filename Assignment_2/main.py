@@ -181,9 +181,19 @@ def main() -> None:
 
         evaluate_model(
             model=model,
+            x_test=x_val,
+            y_test=y_val,
+            model_name=model_name,
+            set_name="validation",
+            verbose=VERBOSE,
+        )
+
+        evaluate_model(
+            model=model,
             x_test=x_test,
             y_test=y_test,
             model_name=model_name,
+            set_name="test",
             verbose=VERBOSE,
         )
 
@@ -195,6 +205,7 @@ def main() -> None:
             y_test=y_test,
             verbose=VERBOSE,
         )
+        
 
 if __name__ == "__main__":
     main()

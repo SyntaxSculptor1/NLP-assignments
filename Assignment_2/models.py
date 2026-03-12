@@ -1,4 +1,7 @@
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from pathlib import Path
 import tensorflow as tf
 from keras import Sequential
 from keras.layers import Dense, Dropout, GlobalMaxPool1D, Conv1D, Input, Embedding, TextVectorization, Bidirectional, LSTM
@@ -83,7 +86,7 @@ def training_cnn(
         metrics=metrics
     )
 
-    model.fit(
+    history = model.fit(
         x=x_train,
         y=y_train,
         epochs=epochs,
@@ -92,6 +95,19 @@ def training_cnn(
         callbacks=[callback],
         verbose=int(verbose)
     )
+
+    if verbose:
+        history = pd.DataFrame(history.history)[["loss", "val_loss"]]
+        plt.clf()
+        history.plot(figsize=(8, 5))
+        plt.title(f"Loss curve - {model_name}")
+        plt.xlabel("Epochs")
+        plt.ylabel("Loss")
+        plt.grid(True)
+        plt.gca().set_ylim(0, 1)
+        plt.savefig(
+            Path(__file__).parent / "plots" / f"{model_name}_loss.png"
+        )
 
     return model
 
@@ -136,7 +152,8 @@ def training_lstm(
     metrics: list = ["accuracy"],
     patience: int = 3,
     dropout: float = 0.0,
-    verbose: bool = True
+    verbose: bool = True,
+    plot: bool = True
 ) -> Sequential:
     
     if verbose:
@@ -165,7 +182,7 @@ def training_lstm(
         metrics=metrics
     )
 
-    model.fit(
+    history = model.fit(
         x=x_train,
         y=y_train,
         epochs=epochs,
@@ -174,6 +191,19 @@ def training_lstm(
         callbacks=[callback],
         verbose=int(verbose)
     )
+
+    if verbose:
+        history = pd.DataFrame(history.history)[["loss", "val_loss"]]
+        plt.clf()
+        history.plot(figsize=(8, 5))
+        plt.title(f"Loss curve - {model_name}")
+        plt.xlabel("Epochs")
+        plt.ylabel("Loss")
+        plt.grid(True)
+        plt.gca().set_ylim(0, 1)
+        plt.savefig(
+            Path(__file__).parent / "plots" / f"{model_name}_loss.png"
+        )
 
     return model
     
