@@ -43,9 +43,32 @@ def argument_parsing() -> argparse.Namespace:
 
 
 def transform_text_length(data: pd.DataFrame, text_column: str = "text", verbose: bool = True) -> pd.Series:
+    """
+    Transform the text length into a pandas Series.
+
+    Args:
+        data (pd.DataFrame): DataFrame containing the text column.
+        text_column (str, optional): The name of the text column. Defaults to "text".
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        pd.Series: Series containing the text lengths.
+    """
     return data[text_column].apply(lambda x: len(x.split(" ")))
 
 def plot_text_length(data: pd.DataFrame, text_column: str = "text", save: bool = True, verbose: bool = True) -> None:
+    """
+    Plot the text length distribution of the given DataFrame.
+
+    Parameters:
+        data (pd.DataFrame): DataFrame containing the text column.
+        text_column (str, optional): The name of the text column. Defaults to "text".
+        save (bool, optional): Whether to save the plot. Defaults to True.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        None
+    """
     if verbose:
         console.print(f"\n[bold white] Plotting text length distribution: [/bold white]")
 

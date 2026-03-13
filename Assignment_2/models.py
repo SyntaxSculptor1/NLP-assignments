@@ -22,6 +22,24 @@ def build_cnn(
     padding_length: int = 100,
     dropout: float = 0.0,
 ):
+    """
+    Builds a Convolutional Neural Network (CNN) model for text classification.
+
+    Parameters:
+        vectorizer (TextVectorization): The vectorizer to use.
+        num_classes (int): The number of classes to predict.
+        filters (int): The number of filters for the Conv1D layer.
+        kernel_size (int): The kernel size for the Conv1D layer.
+        activation (str): The activation function for the Conv1D and Dense layers.
+        embedding_size (int): The size of the embedding layer.
+        dense_size (int): The size of the Dense layer after the Conv1D layer.
+        vocab_size (int): The size of the vocabulary for the Embedding layer.
+        padding_length (int): The length to which text sequences are padded.
+        dropout (float): The dropout rate for the Dropout layer.
+
+    Returns:
+        Sequential: The CNN model.
+    """
     return Sequential([
         Input(shape=(), dtype=tf.string),
         vectorizer,
@@ -58,6 +76,36 @@ def training_cnn(
     dropout: float = 0.0,
     verbose: bool = True
 ) -> Sequential:
+    """
+    Trains a Convolutional Neural Network (CNN) model for text classification.
+
+    Parameters:
+        model_name (str): The name of the model.
+        x_train (np.ndarray): The training features.
+        y_train (np.ndarray): The training labels.
+        x_val (np.ndarray): The validation features.
+        y_val (np.ndarray): The validation labels.
+        vectorizer (TextVectorization): The vectorizer to use.
+        num_classes (int): The number of classes to predict.
+        filters (int): The number of filters for the Conv1D layer.
+        kernel_size (int): The kernel size for the Conv1D layer.
+        activation (str): The activation function for the Conv1D and Dense layers.
+        embedding_size (int): The size of the embedding layer.
+        dense_size (int): The size of the Dense layer after the Conv1D layer.
+        vocab_size (int): The size of the vocabulary for the Embedding layer.
+        padding_length (int): The length to which text sequences are padded.
+        epochs (int): The number of epochs to train the model.
+        optimizer (str): The optimizer to use.
+        batch_size (int): The batch size for training.
+        loss (str): The loss function to use.
+        metrics (list): The metrics to use for evaluation.
+        patience (int): The patience for the Early Stopping callback.
+        dropout (float): The dropout rate for the Dropout layer.
+        verbose (bool): Whether to print verbose output.
+
+    Returns:
+        Sequential: The trained CNN model.
+    """
     if verbose:
         console.print(f"\n [bold white] Training model: {model_name} [/bold white]")
 
@@ -120,7 +168,7 @@ def build_lstm(
     vocab_size: int = 10000,
     padding_length: int = 100,
     dropout: float = 0.0,
-):
+) -> Sequential:
     return Sequential([
         Input(shape=(), dtype=tf.string),
         vectorizer,
@@ -155,7 +203,35 @@ def training_lstm(
     verbose: bool = True,
     plot: bool = True
 ) -> Sequential:
-    
+    """
+    Train a Long Short-Term Memory (LSTM) model for text classification.
+
+    Parameters:
+        model_name (str): The name of the model.
+        x_train (np.ndarray): The training features.
+        y_train (np.ndarray): The training labels.
+        x_val (np.ndarray): The validation features.
+        y_val (np.ndarray): The validation labels.
+        vectorizer (TextVectorization): The vectorizer to use.
+        num_classes (int, optional): The number of classes to predict. Defaults to 4.
+        embedding_size (int, optional): The size of the embedding layer. Defaults to 100.
+        lstm_size (int, optional): The size of the LSTM layer. Defaults to 64.
+        dense_size (int, optional): The size of the Dense layer after the LSTM layer. Defaults to 64.
+        vocab_size (int, optional): The size of the vocabulary for the Embedding layer. Defaults to 10000.
+        padding_length (int, optional): The length to which text sequences are padded. Defaults to 100.
+        epochs (int, optional): The number of epochs to train the model. Defaults to 100.
+        optimizer (str, optional): The optimizer to use. Defaults to "adam".
+        batch_size (int, optional): The batch size for training. Defaults to 32.
+        loss (str, optional): The loss function to use. Defaults to "categorical_crossentropy".
+        metrics (list, optional): The metrics to use for evaluation. Defaults to ["accuracy"].
+        patience (int, optional): The patience for the Early Stopping callback. Defaults to 3.
+        dropout (float, optional): The dropout rate for the Dropout layer. Defaults to 0.0.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+        plot (bool, optional): Whether to plot the loss curve. Defaults to True.
+
+    Returns:
+        Sequential: The trained model.
+    """
     if verbose:
         console.print(f"\n [bold white] Training model: {model_name} [/bold white]")
 

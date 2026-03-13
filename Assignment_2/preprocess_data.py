@@ -130,6 +130,18 @@ def onehotencode_labels(
     y_test: pd.Series,
     verbose: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    One-hot encode the labels.
+
+    Args:
+        y_train (pd.Series): The training labels.
+        y_val (pd.Series): The validation labels.
+        y_test (pd.Series): The test labels.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]: The one-hot encoded labels.
+    """
     if verbose:
         console.print(f"\n [bold white] One-hot encoding labels: [/bold white]")
     
