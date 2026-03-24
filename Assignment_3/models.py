@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from datasets import Dataset
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments, EarlyStoppingCallback
 from rich.console import Console
 
 console = Console()
@@ -13,15 +13,15 @@ def load_automodel(
 ) -> AutoModelForSequenceClassification:
     if verbose:
         console.print(f"\n [bold white] Loading model {model_name}... [/bold white]")
-        
+
     model = AutoModelForSequenceClassification.from_pretrained(
         model_name,
         num_labels=num_labels,
     )
-    
+
     if verbose:
         print(f"Model {model_name} loaded successfully.")
-        
+
     return model
 
 def train_model(
@@ -33,37 +33,52 @@ def train_model(
     batch_size: int = 8,
     weight_decay: float = 0.01,
     learning_rate: float = 2e-5,
+    logging_steps: int = 10,
+    patience: int = 3,
+    save: bool = True,
     verbose: bool = True,
 ) -> Trainer:
     if verbose:
         console.print(f"\n [bold white]Training model {name}...[/bold white]")
-    
+
     if verbose:
         console.print(f"Setting up training arguments for {name}...")
-    
+
+    early_stopping_callback = EarlyStoppingCallback(early_stopping_patience=3)
+
     training_args = TrainingArguments(
         output_dir=Path(__file__).parent / "results" / name,
         logging_dir=Path(__file__).parent / "logs" / name,
+        eval_strategy="epoch",
+        logging_strategy="epoch",
+        save_strategy="epoch",
         learning_rate=learning_rate,
         num_train_epochs=epochs,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         weight_decay=weight_decay,
+        load_best_model_at_end=True,
+        metric_for_best_model="loss",
+        greater_is_better=False,
     )
-    
+
     trainer = Trainer(
         model=automodel,
         args=training_args,
         train_dataset=train_data,
         eval_dataset=validation_data,
+        callbacks=[early_stopping_callback]
     )
-    
+
     if verbose:
         console.print(f"\n Training model {name}...")
-        
+
     trainer.train()
-    
+
+    if save:
+        trainer.save_model(Path(__file__).parent / "trained_models" / name)
+
     if verbose:
         console.print(f"Finished training model {name}.")
-    
+
     return trainer
