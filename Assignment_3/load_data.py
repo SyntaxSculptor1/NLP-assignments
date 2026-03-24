@@ -15,7 +15,7 @@ def load_data(
     verbose: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
-    Load the data from the dataset.
+    Load the data from the dataset. Also normalize the labels to be zero-indexed.
 
     Args:
         dataset (str, optional): The dataset to load. Defaults to "sh0416/ag_news".

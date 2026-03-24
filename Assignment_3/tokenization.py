@@ -3,9 +3,8 @@ import re
 from typing import List
 
 from datasets import Dataset
-from transformers import AutoTokenizer
-
 from rich.console import Console
+from transformers import AutoTokenizer
 
 console = Console()
 
@@ -13,6 +12,16 @@ def load_tokenizer(
     model_name: str,
     verbose: bool = True,
 ) -> AutoTokenizer:
+    """
+    Load a tokenizer from the Hugging Face model hub.
+
+    Args:
+        model_name (str): The name of the model to load.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        AutoTokenizer: The loaded tokenizer.
+    """
     if verbose:
         console.print(f"\n [bold white] Loading tokenizer for model - {model_name}: [/bold white]")
         
@@ -49,6 +58,22 @@ def tokenize_datasets(
     truncation: bool = True,
     verbose: bool = True
 ) -> List[Dataset]:
+    """
+    Tokenize the datasets.
+
+    Args:
+        name (str): The name of the datasets.
+        datasets (List[Dataset]): The datasets to tokenize.
+        tokenizer (AutoTokenizer): The tokenizer to use.
+        text_column (str, optional): The column containing the text. Defaults to "text".
+        padding_type (str, optional): The type of padding to use. Defaults to "max_length".
+        truncation (bool, optional): Whether to truncate the text. Defaults to True.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        List[Dataset]: The tokenized datasets.
+    """
+    
     if verbose:
         console.print(f"\n [bold white] Tokenizing datasets for {name}: [/bold white]")
     

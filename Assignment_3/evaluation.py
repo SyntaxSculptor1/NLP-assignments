@@ -1,6 +1,8 @@
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
+from datasets import Dataset
 from rich.console import Console
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
@@ -8,9 +10,8 @@ from sklearn.metrics import (
     confusion_matrix,
     f1_score,
 )
-import numpy as np
 from transformers import Trainer
-from datasets import Dataset
+
 from utils import CATEGORIES
 
 console = Console()
@@ -23,6 +24,20 @@ def evaluate_model(
     verbose: bool = True,
     plot: bool = True,
 ) -> None:
+    """
+    Evaluate the performance of a given model on the test set.
+
+    Args:
+        model (Trainer): The model to evaluate.
+        model_name (str): The name of the model.
+        set_name (str): The name of the set.
+        test_dataset (Dataset): The test dataset.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+        plot (bool, optional): Whether to plot the confusion matrix. Defaults to True.
+
+    Returns:
+        None
+    """
     if verbose:
         console.print(f"\n [bold white] Evaluating model: {model_name} on {set_name} [/bold white]")
 

@@ -1,8 +1,13 @@
 from pathlib import Path
 
 from datasets import Dataset
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments, EarlyStoppingCallback
 from rich.console import Console
+from transformers import (
+    AutoModelForSequenceClassification,
+    EarlyStoppingCallback,
+    Trainer,
+    TrainingArguments,
+)
 
 console = Console()
 
@@ -11,6 +16,17 @@ def load_automodel(
     num_labels: int,
     verbose: bool = True,
 ) -> AutoModelForSequenceClassification:
+    """
+    Load a pre-trained model from the Hugging Face model hub.
+
+    Args:
+        model_name (str): The name of the model to load.
+        num_labels (int): The number of labels for the model.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        AutoModelForSequenceClassification: The loaded model.
+    """
     if verbose:
         console.print(f"\n [bold white] Loading model {model_name}... [/bold white]")
 
@@ -33,18 +49,36 @@ def train_model(
     batch_size: int = 8,
     weight_decay: float = 0.01,
     learning_rate: float = 2e-5,
-    logging_steps: int = 10,
     patience: int = 3,
     save: bool = True,
     verbose: bool = True,
 ) -> Trainer:
+    """
+    Train a model using the Trainer API.
+
+    Args:
+        name (str): The name of the model.
+        automodel (AutoModelForSequenceClassification): The model to train.
+        train_data (Dataset): The training data.
+        validation_data (Dataset): The validation data.
+        epochs (int, optional): The number of epochs to train for. Defaults to 5.
+        batch_size (int, optional): The batch size to use for training. Defaults to 8.
+        weight_decay (float, optional): The weight decay to use for training. Defaults to 0.01.
+        learning_rate (float, optional): The learning rate to use for training. Defaults to 2e-5.
+        patience (int, optional): The patience for early stopping. Defaults to 3.
+        save (bool, optional): Whether to save the model. Defaults to True.
+        verbose (bool, optional): Whether to print verbose output. Defaults to True.
+
+    Returns:
+        Trainer: The trained model.
+    """
     if verbose:
         console.print(f"\n [bold white]Training model {name}...[/bold white]")
 
     if verbose:
         console.print(f"Setting up training arguments for {name}...")
 
-    early_stopping_callback = EarlyStoppingCallback(early_stopping_patience=3)
+    early_stopping_callback = EarlyStoppingCallback(early_stopping_patience=patience)
 
     training_args = TrainingArguments(
         output_dir=Path(__file__).parent / "results" / name,

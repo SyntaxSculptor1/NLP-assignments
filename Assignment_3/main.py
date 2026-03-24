@@ -1,18 +1,17 @@
 import argparse
 
-from rich.console import Console
-from rich.panel import Panel
-
 import torch
 from datasets import Dataset
+from rich.console import Console
+from rich.panel import Panel
 from transformers import AutoTokenizer
 
-from load_data import load_data
-from preprocess_data import merge_title_description, headline_only_selection, convert_dataframes_to_dataset
-from tokenization import load_tokenizer, tokenize_datasets
-from models import load_automodel, train_model
 from evaluation import evaluate_model
-from utils import get_model_settings, CATEGORIES
+from load_data import load_data
+from models import load_automodel, train_model
+from preprocess_data import convert_dataframes_to_dataset, headline_only_selection, merge_title_description
+from tokenization import load_tokenizer, tokenize_datasets
+from utils import CATEGORIES, get_model_settings
 
 
 console = Console()
