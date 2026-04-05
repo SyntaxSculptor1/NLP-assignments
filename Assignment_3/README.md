@@ -65,6 +65,7 @@ uv run main.py
 ```
 
 We allow for argument parsing, these arguments include:
+- --model - The model to be used as the pretrained model
 - --dataset - The dataset to use
 - --split - The train-validation split
 - --seed - The seed for code reproducibility
@@ -79,6 +80,7 @@ We allow for argument parsing, these arguments include:
 
 ## Code reproducibility
 In our report, we use the default properties which are as follows:
+- Model - distilbert-base-uncased
 - Dataset - "sh0416/ag_news"
 - Split - 0.1
 - Seed - 67
@@ -93,6 +95,8 @@ In our report, we use the default properties which are as follows:
 
 ## Models created
 We fine-tune 6 models with these, 3 of them have both the headlines and the description being utilized, the other 3 only have headlines. Then in each one of those 3 groups we train one with 25% of the data, another with 75% of the data and finally another with 100% of the data as to fufill the Robustness evaluations set by the assignment.
+
+We utilize distilbert-base-uncased as our default model.
 
 ## Credits
 Credits go to: [@ChrChirag](https://github.com/ChrChirag)  [@Cistaroth](https://github.com/Cistaroth) [@SyntaxSculptor1](https://github.com/SyntaxSculptor1)
