@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.panel import Panel
 from transformers import AutoTokenizer
 
-from evaluation import evaluate_model
+from evaluation import evaluate_model, find_misclassified
 from load_data import load_data
 from models import load_automodel, train_model
 from preprocess_data import convert_dataframes_to_dataset, headline_only_selection, merge_title_description
@@ -216,6 +216,14 @@ def main() -> None:
             test_dataset=test_data,
             verbose=VERBOSE,
             plot=True
+        )
+
+        find_misclassified(
+            model=trainer,
+            model_name=model_name,
+            x_test_raw=test_data_raw,
+            x_test_cleaned=test_data,
+            verbose=VERBOSE,
         )
 
 if __name__ == "__main__":

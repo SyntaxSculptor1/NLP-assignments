@@ -70,3 +70,46 @@ def evaluate_model(
 
     if verbose:
         console.print(f"\n [white] Finished evaluating {model_name} on {set_name}. [/white]")
+
+def find_misclassified(
+    model: Trainer,
+    model_name: str,
+    x_test_raw: pd.DataFrame,
+    x_test_cleaned: Dataset,
+    text_column: str = "text",
+    label_column: str = "labels",
+    verbose: bool = True,
+    save: bool = True,
+) -> pd.DataFrame:
+
+    predictions = model.predict(x_test_cleaned)
+    y_pred = np.argmax(predictions.predictions, axis=1)
+    y_test = predictions.label_ids
+
+    y_pred_named = np.array([CATEGORIES[x] for x in y_pred])
+    y_test_named = np.array([CATEGORIES[x] for x in y_test])
+
+    mask = y_pred_named != y_test_named
+    misclassified = x_test_raw[mask].copy()
+
+    misclassified.insert(loc=0, column="Predicted Class", value=y_pred[mask])
+    misclassified.insert(loc=0, column="Actual Class", value=y_test[mask])
+
+    misclassified.insert(
+        loc=3, column="Cleaned_Text", value=x_test_cleaned[mask]
+    )
+
+    misclassified.rename(columns={text_column: "Raw_Text"}, inplace=True)
+    misclassified = misclassified.reset_index(drop=True).drop(label_column, axis=1)
+
+    if save:
+        save_path = (
+            Path(__file__).parent / "misclassified" / f"{model_name}_misclassified.csv"
+        )
+        misclassified.to_csv(save_path, index=False)
+
+    if verbose:
+        console.print(f"\n Found {len(misclassified)} misclassified examples.")
+        console.print(misclassified.head())
+
+    return misclassified
